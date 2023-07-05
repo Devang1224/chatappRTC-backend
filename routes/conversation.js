@@ -106,7 +106,18 @@ router.get("/messages/:convoId",async(req,res)=>{
 })
 
 
+// delete message
 
+router.post("/messages/:messageId",async (req,res)=>{
+
+   try{
+       const res = await message.findByIdAndDelete(req.params.messageId);
+   }
+   catch(err){
+    console.log(err);
+   }
+
+  })
 
 
 module.exports = router
