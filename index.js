@@ -9,7 +9,10 @@ const http = require('http');
 
 const app = express();
 
-app.use(cors())
+app.use(cors({
+    origin: "https://chatrtc.netlify.app"
+  }));
+
 require('dotenv').config()
 connectDB(); //establishing mongodb connection
 
