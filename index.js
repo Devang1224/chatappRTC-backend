@@ -3,9 +3,11 @@ const mongoose = require("mongoose")
 const userRoute = require("./routes/user")
 const conversationRoute = require("./routes/conversation")
 const cors = require('cors')
-const app = express();
 const connectDB = require('./Db/db');
 const socketio = require('socket.io');
+const http = require('http');
+
+const app = express();
 
 app.use(cors())
 require('dotenv').config()
