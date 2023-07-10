@@ -17,7 +17,12 @@ require('dotenv').config()
 connectDB(); //establishing mongodb connection
 
 const server = http.createServer(app);
-const io = socketio(server);
+const io = socketio(server)(httpServer, {
+    cors: {
+      origin: "https://chatrtc.netlify.app",
+      methods: ["GET", "POST"]
+    }
+  });;
 
 app.use(express.json());
 
