@@ -5,11 +5,14 @@ const conversationRoute = require("./routes/conversation")
 const cors = require('cors')
 const app = express();
 const connectDB = require('./Db/db');
-
+const socketio = require('socket.io');
 
 app.use(cors())
 require('dotenv').config()
 connectDB(); //establishing mongodb connection
+
+const server = http.createServer(app);
+const io = socketio(server);
 
 app.use(express.json());
 
@@ -17,14 +20,6 @@ app.use(express.json());
 app.use("/user",userRoute);
 app.use("/chat",conversationRoute)
 
- const server = app.listen(process.env.PORT || 6010,()=>{console.log("server is started")})
-
-const io = require("socket.io")(server,{
-    pingTimeout: 60000,
-    cors: {
-        origin: "https://chatrtc.netlify.app/",
-      }
-})
 
 io.on("connection", (socket) => {
 
@@ -43,3 +38,5 @@ io.on("connection", (socket) => {
     })
 
   });
+
+  server.listen(process.env.PORT || 6010, () => console.log(`Server has started.`));
