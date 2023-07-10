@@ -17,12 +17,12 @@ app.use(express.json());
 app.use("/user",userRoute);
 app.use("/chat",conversationRoute)
 
- const server = app.listen(process.env.PORT,()=>{console.log("server is started")})
+ const server = app.listen(process.env.PORT || 6010,()=>{console.log("server is started")})
 
 const io = require("socket.io")(server,{
     pingTimeout: 60000,
     cors: {
-        origin: "http://localhost:3001",
+        origin: "https://chatrtc.netlify.app/",
       }
 })
 
