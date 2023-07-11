@@ -20,7 +20,7 @@ connectDB(); //establishing mongodb connection
 const server = http.createServer(app);
 const io = socketio(server, {
     cors: {
-      origin: "http://localhost:3001",
+      origin: "https://chatrtc.netlify.app",
       methods: ["GET", "POST"]
     }
   });;
