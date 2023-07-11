@@ -10,8 +10,9 @@ const http = require('http');
 const app = express();
 
 app.use(cors({
-    origin: "https://chatrtc.netlify.app"
+    origin: "http://localhost:3001"
   }));
+app.use(express.json());
 
 require('dotenv').config()
 connectDB(); //establishing mongodb connection
@@ -19,16 +20,16 @@ connectDB(); //establishing mongodb connection
 const server = http.createServer(app);
 const io = socketio(server, {
     cors: {
-      origin: "https://chatrtc.netlify.app",
+      origin: "http://localhost:3001",
       methods: ["GET", "POST"]
     }
   });;
 
-app.use(express.json());
 
 
 app.use("/user",userRoute);
 app.use("/chat",conversationRoute)
+
 
 
 io.on("connection", (socket) => {
@@ -43,8 +44,11 @@ io.on("connection", (socket) => {
     })
  
     socket.on("newMessage",(message)=>{
-        socket.emit("Message",message);
 
+        console.log(message.conversationId);
+
+        // socket.emit("Message",message);
+  io.to(message.conversationId).emit('Message', message);
     })
 
   });
