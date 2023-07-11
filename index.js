@@ -10,7 +10,7 @@ const http = require('http');
 const app = express();
 
 app.use(cors({
-    origin: "http://localhost:3001"
+    origin: "https://chatrtc.onrender.com"
   }));
 app.use(express.json());
 
