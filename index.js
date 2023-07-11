@@ -10,7 +10,7 @@ const http = require('http');
 const app = express();
 
 app.use(cors({
-    origin: "https://chatrtc.onrender.com"
+    origin: "https://chatrtc.netlify.app"
   }));
 app.use(express.json());
 
