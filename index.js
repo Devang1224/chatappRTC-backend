@@ -90,5 +90,5 @@ socket.on("peer:nego:done", ({ to, ans }) => {
   });
 
 
-  server.listen(process.env.PORT , () => console.log(`Server has started.`));
+  server.listen(process.env.PORT || 6010 , () => console.log(`Server has started.`));
   // || 6010
