@@ -33,11 +33,21 @@ app.use("/chat",conversationRoute)
 const userToSocket = new Map();
 const socketToUser = new Map();
 
+
+//sender -> receiver
+
 io.on("connection", (socket) => {
 
     console.log("new user connected");
 
     socket.emit("connected","message from the server")
+
+socket.on("userJoinedTheChat",(data)=>{  
+  const {User} = data;
+  userToSocket.set(User,socket.id);
+  socketToUser.set(socket.id,User);
+})
+
    
     socket.on("privateChat",(data)=>{  
       const{convoid:roomId,username:User} = data;          // roomId is convoId  ( destructring of objects)
@@ -50,28 +60,59 @@ io.on("connection", (socket) => {
     })
       
    // when a user press the videocall button 
-    socket.on("enterVideoCall",(data)=>{
-      const{convoId:roomId,User} = data;          // roomId is convoId  ( destructring of objects)
-    socket.broadcast.to(roomId).emit("user-joined",{User,id:socket.id});
+    socket.on("roomJoined",(data)=>{
+      const{convoId:roomId,User,Receiver} = data;   // roomId is convoId  ( destructring of objects)
+    // socket.broadcast.to(roomId).emit("user-joined",{User,id:socket.id}); // id=jatin
 
+    const receiverid = userToSocket.get(Receiver)
+    io.to(receiverid).emit("user-joined",{User,id:socket.id});
+
+    const UserId = userToSocket.get(User)
+    io.to(UserId).emit("setremoteidfor-user",{Receiver,receiverid}); // this is sending the receiver's socket id back to the user
+    //consoling
+    const user = socketToUser.get(socket.id)
+    console.log("1",user,socket.id);
     })
 
-socket.on("user:call", ({ to, offer }) => {
-  io.to(to).emit("incomming:call", { from: socket.id, offer });
+socket.on("modalaccepted",({to})=>{
+  
+io.to(to).emit("youcancallusernow");
+
+})
+
+
+socket.on("user:call", ({from,to, offer }) => {
+    // io.to(to).emit("incomming:call", { from: socket.id, offer }); // to=devangid from jatinid
+   if(to){
+    console.log('incoming call ',from,to,offer);
+    io.to(to).emit("incomming:call", { from: socket.id, offer });
+   }
+    //consoling
+    const user = socketToUser.get(socket.id)
+    console.log("2",user,socket.id);
 });
 
 socket.on("call:accepted", ({ to, ans }) => {
-  io.to(to).emit("call:accepted", { from: socket.id, ans });
+    
+    console.log("devang to jatin",to,ans);
+
+    io.to(to).emit("call:accepted", { from: socket.id, ans });  // to=jatin from devangs id 
+
+    const user = socketToUser.get(socket.id)
+    console.log("3",user,socket.id);
 });
 
 socket.on("peer:nego:needed", ({ to, offer }) => {
-  console.log("peer:nego:needed", offer);
-  io.to(to).emit("peer:nego:needed", { from: socket.id, offer });
+    io.to(to).emit("peer:nego:needed", { from: socket.id, offer });    // to devang
+    const user = socketToUser.get(socket.id)
+    console.log("4",user,socket.id);
 });
 
 socket.on("peer:nego:done", ({ to, ans }) => {
-  console.log("peer:nego:done", ans);
-  io.to(to).emit("peer:nego:final", { from: socket.id, ans });
+
+    io.to(to).emit("peer:nego:final", { from: socket.id, ans });   //  to jatin
+    const user = socketToUser.get(socket.id)
+    console.log("5",user,socket.id);
 });
 
 
@@ -91,4 +132,5 @@ socket.on("peer:nego:done", ({ to, ans }) => {
 
 
   server.listen(process.env.PORT || 6010 , () => console.log(`Server has started.`));
-  // || 6010
+
+
