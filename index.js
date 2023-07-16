@@ -115,7 +115,9 @@ socket.on("peer:nego:done", ({ to, ans }) => {
     console.log("5",user,socket.id);
 });
 
-
+socket.on("callRejected",({to})=>{
+  io.to(to).emit("RejectedCall")
+})
 
 
 
