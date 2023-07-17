@@ -10,7 +10,7 @@ const http = require('http');
 const app = express();
 
 app.use(cors({
-    origin: "https://chatrtc.netlify.app"
+     origin: "https://chatrtc.netlify.app" 
   }));
 app.use(express.json());
 
@@ -38,9 +38,6 @@ const socketToUser = new Map();
 
 io.on("connection", (socket) => {
 
-    console.log("new user connected");
-
-    socket.emit("connected","message from the server")
 
 socket.on("userJoinedTheChat",(data)=>{  
   const {User} = data;
@@ -48,21 +45,17 @@ socket.on("userJoinedTheChat",(data)=>{
   socketToUser.set(socket.id,User);
 })
 
-   
+   //chat room + video calling room
     socket.on("privateChat",(data)=>{  
       const{convoid:roomId,username:User} = data;          // roomId is convoId  ( destructring of objects)
         userToSocket.set(User,socket.id);
         socketToUser.set(socket.id,User);
         socket.join(roomId);
-        console.log((`user connected with convo id :${roomId}`));
-
-
     })
       
    // when a user press the videocall button 
     socket.on("roomJoined",(data)=>{
-      const{convoId:roomId,User,Receiver} = data;   // roomId is convoId  ( destructring of objects)
-    // socket.broadcast.to(roomId).emit("user-joined",{User,id:socket.id}); // id=jatin
+      const{convoId:roomId,User,Receiver} = data;   
 
     const receiverid = userToSocket.get(Receiver)
     io.to(receiverid).emit("user-joined",{User,id:socket.id});
@@ -71,54 +64,49 @@ socket.on("userJoinedTheChat",(data)=>{
     io.to(UserId).emit("setremoteidfor-user",{Receiver,receiverid}); // this is sending the receiver's socket id back to the user
     //consoling
     const user = socketToUser.get(socket.id)
-    console.log("1",user,socket.id);
     })
 
+
 socket.on("modalaccepted",({to})=>{
-  
 io.to(to).emit("youcancallusernow");
 
 })
 
 
+// calling the user
 socket.on("user:call", ({from,to, offer }) => {
-    // io.to(to).emit("incomming:call", { from: socket.id, offer }); // to=devangid from jatinid
    if(to){
-    console.log('incoming call ',from,to,offer);
     io.to(to).emit("incomming:call", { from: socket.id, offer });
    }
-    //consoling
     const user = socketToUser.get(socket.id)
-    console.log("2",user,socket.id);
 });
 
+
+// on call accepted
 socket.on("call:accepted", ({ to, ans }) => {
-    
-    console.log("devang to jatin",to,ans);
+    io.to(to).emit("call:accepted", { from: socket.id, ans });  
 
-    io.to(to).emit("call:accepted", { from: socket.id, ans });  // to=jatin from devangs id 
-
-    const user = socketToUser.get(socket.id)
-    console.log("3",user,socket.id);
 });
 
+
+//handling negotiation
 socket.on("peer:nego:needed", ({ to, offer }) => {
-    io.to(to).emit("peer:nego:needed", { from: socket.id, offer });    // to devang
-    const user = socketToUser.get(socket.id)
-    console.log("4",user,socket.id);
+    io.to(to).emit("peer:nego:needed", { from: socket.id, offer });   
+
 });
 
 socket.on("peer:nego:done", ({ to, ans }) => {
 
-    io.to(to).emit("peer:nego:final", { from: socket.id, ans });   //  to jatin
-    const user = socketToUser.get(socket.id)
-    console.log("5",user,socket.id);
-});
+    io.to(to).emit("peer:nego:final", { from: socket.id, ans });   
 
+});
+//handling negotiation
+
+
+// on call rejected
 socket.on("callRejected",({to})=>{
   io.to(to).emit("RejectedCall")
 })
-
 
 
 
