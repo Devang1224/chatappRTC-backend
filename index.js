@@ -10,7 +10,7 @@ const http = require('http');
 const app = express();
 
 app.use(cors({
-     origin: "https://chatrtc.netlify.app" 
+     origin: "https://chatrtc.netlify.app" // https://chatrtc.netlify.app
   }));
 app.use(express.json());
 
@@ -74,7 +74,7 @@ io.to(to).emit("youcancallusernow");
 
 
 // calling the user
-socket.on("user:call", ({from,to, offer }) => {
+socket.on("user:call", ({to, offer }) => {
    if(to){
     io.to(to).emit("incomming:call", { from: socket.id, offer });
    }
