@@ -10,7 +10,7 @@ const http = require('http');
 const app = express();
 
 app.use(cors({
-     origin: "https://chatrtc.netlify.app " // https://chatrtc.netlify.app  //http://localhost:3001
+     origin: "https://chatrtc.netlify.app" // https://chatrtc.netlify.app  //http://localhost:3001
   }));
 app.use(express.json());
 
@@ -20,7 +20,7 @@ connectDB(); //establishing mongodb connection
 const server = http.createServer(app);
 const io = socketio(server, {
     cors: {
-      origin: "https://chatrtc.netlify.app ",
+      origin: "https://chatrtc.netlify.app",
       methods: ["GET", "POST"]
     }
   });;
@@ -61,8 +61,8 @@ socket.on("userJoinedTheChat",(data)=>{
     io.to(receiverid).emit("user-joined",{User,id:socket.id});
 
     const UserId = userToSocket.get(User)
-    io.to(UserId).emit("setremoteidfor-user",{Receiver,receiverid}); // this is sending the receiver's socket id back to the user
-    //consoling
+    io.to(UserId).emit("setremoteidfor-user",{Receiver,receiverid}); // sending the receiver's socket id back to the user
+
     const user = socketToUser.get(socket.id)
     })
 
@@ -100,7 +100,7 @@ socket.on("peer:nego:done", ({ to, ans }) => {
     io.to(to).emit("peer:nego:final", { from: socket.id, ans });   
 
 });
-//handling negotiation
+
 
 
 // on call rejected
@@ -116,7 +116,7 @@ socket.on("callRejected",({to})=>{
     socket.on("newMessage",(message)=>{
        io.to(message.conversationId).emit('Message', message);
     })
-    //sending messages
+
 
   });
 
