@@ -10,7 +10,7 @@ const http = require('http');
 const app = express();
 
 app.use(cors({
-     origin: "https://chatrtc.netlify.app/" // https://chatrtc.netlify.app  //http://localhost:3001
+     origin: "https://chatrtc.netlify.app" // https://chatrtc.netlify.app  //http://localhost:3001
   }));
 app.use(express.json());
 
@@ -20,7 +20,7 @@ connectDB(); //establishing mongodb connection
 const server = http.createServer(app);
 const io = socketio(server, {
     cors: {
-      origin: "https://chatrtc.netlify.app/",
+      origin: "https://chatrtc.netlify.app",
       methods: ["GET", "POST"]
     }
   });;
